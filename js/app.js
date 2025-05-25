@@ -1,14 +1,20 @@
 const API_URL = "http://51.38.232.174:3002/v1";
 const feedbackWrap = document.querySelector(".feedback-wrapper")
 const SearchButton = document.querySelector("#search")
+const filterSort = document.querySelector("#filter-sort");
+const filterPage = document.querySelector("#filter-page");
+const feedbackCounter = document.querySelector("#feedback-counter")
 
-async function feedbacks(){
+async function feedbacks(sort = 'recent', pageSize = 10){
     feedbackWrap.innerHTML = '';
-    let api_infos =  await fetch(`${API_URL}/feedbacks`, {
+      
+    let api_infos = await fetch(`${API_URL}/feedbacks?sort=${sort}&pageSize=${pageSize}`, {
         method: "GET"
     })
 
     const data = await api_infos.json();
+
+    feedbackCounter.textContent = data.length;
 
     for ( let i = 0; i < data.length; i++ ) {
         infos(
@@ -65,8 +71,16 @@ function infos( id, title, description, category, votes, comments){
     feedbacksCommentsAll.appendChild(feedbacksComments)
     feedbacksComments.classList.add("bold")
     feedbacksComments.textContent = comments;
-    
+
    feedbacksItem.appendChild(feedbacksVote)
    feedbacksItem.appendChild(feedbackElements)
    feedbacksItem.appendChild(feedbacksCommentsAll)
 }
+
+SearchButton.addEventListener('click', function(filtre) {
+    filtre.preventDefault();
+    const sortValue = filterSort.value;
+    const pageSizeValue = filterPage.value;
+    feedbacks(sortValue, pageSizeValue);
+});
+
